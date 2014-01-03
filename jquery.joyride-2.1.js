@@ -37,11 +37,11 @@
       'localStorageKey'      : 'joyride', // Keyname in localstorage
       'tipContainer'         : 'body',    // Where will the tip be attached
       'modal'                : false,     // Whether to cover page with modal during the tour
-      'modalFixed'           : true,      // Whether to fix a modal tip to the page (requires modal:true)
       'expose'               : false,     // Whether to expose the elements at each step in the tour (requires modal:true)
+      'modalFixed'           : true,      // Whether to fix a modal tip to the page (requires modal:true)
       'postExposeCallback'   : $.noop,    // A method to call after an element has been exposed
       'preRideCallback'      : $.noop,    // A method to call before the tour starts (passed index, tip, and cloned exposed element)
-      'postRideCallback'     : $.noop,    // A method to call once the tour closes (canceled or complete)
+      'postRideCallback'     : $.noop,    // A method to call once the tour closes (cancelled or complete)
       'preStepCallback'      : $.noop,    // A method to call before each step
       'postStepCallback'     : $.noop,    // A method to call after each step
       'template' : { // HTML segments for tip layout
@@ -62,7 +62,7 @@
 
     methods = {
 
-      init : function (opts) {
+      init: function (opts) {
         return this.each(function () {
 
           if ($.isEmptyObject(settings)) {
@@ -95,20 +95,20 @@
             }
 
             // generate the tips and insert into dom.
-            if ( (!settings.cookieMonster || !$.cookie(settings.cookieName) ) &&
-              (!settings.localStorage || !methods.support_localstorage() || !localStorage.getItem(settings.localStorageKey) ) ) {
+            if ((!settings.cookieMonster || !$.cookie(settings.cookieName)) &&
+              (!settings.localStorage || !methods.support_localstorage() || !localStorage.getItem(settings.localStorageKey))) {
 
               settings.$tip_content.each(function (index) {
                 methods.create({$li : $(this), index : index});
               });
 
               // show first tip
-              if(settings.autoStart)
-              {
+              if (settings.autoStart) {
                 if (!settings.startTimerOnClick && settings.timer > 0) {
                   methods.show('init');
                   methods.startTimer();
-                } else {
+                }
+                else {
                   methods.show('init');
                 }
               }
@@ -120,12 +120,14 @@
 
               if (settings.$li.next().length < 1) {
                 methods.end();
-              } else if (settings.timer > 0) {
+              }
+              else if (settings.timer > 0) {
                 clearTimeout(settings.automate);
                 methods.hide();
                 methods.show();
                 methods.startTimer();
-              } else {
+              }
+              else {
                 methods.hide();
                 methods.show();
               }
@@ -138,23 +140,25 @@
             });
 
             settings.$window.bind('resize.joyride', function (e) {
-              if(settings.$li){
-              if(settings.exposed && settings.exposed.length>0){
-                var $els = $(settings.exposed);
-                $els.each(function(){
-                  var $this = $(this);
-                  methods.un_expose($this);
-                  methods.expose($this);
-                });
-              }
-              if (methods.is_phone()) {
-                methods.pos_phone();
-              } else {
-                methods.pos_default();
-              }
+              if (settings.$li) {
+                if (settings.exposed && settings.exposed.length>0) {
+                  var $els = $(settings.exposed);
+                  $els.each(function () {
+                    var $this = $(this);
+                    methods.un_expose($this);
+                    methods.expose($this);
+                  });
+                }
+                if (methods.is_phone()) {
+                  methods.pos_phone();
+                }
+                else {
+                  methods.pos_default();
+                }
               }
             });
-          } else {
+          }
+          else {
             methods.restart();
           }
 
@@ -162,32 +166,36 @@
       },
 
       // call this method when you want to resume the tour
-      resume : function () {
+      resume: function () {
         methods.set_li();
         methods.show();
       },
 
-      nextTip: function(){
-            if (settings.$li.next().length < 1) {
-            methods.end();
-            } else if (settings.timer > 0) {
-            clearTimeout(settings.automate);
-            methods.hide();
-            methods.show();
-            methods.startTimer();
-            } else {
-            methods.hide();
-            methods.show();
-            }
+      nextTip: function () {
+        if (settings.$li.next().length < 1) {
+          methods.end();
+        }
+        else if (settings.timer > 0) {
+          clearTimeout(settings.automate);
+          methods.hide();
+          methods.show();
+          methods.startTimer();
+        }
+        else {
+          methods.hide();
+          methods.show();
+        }
       },
 
-      tip_template : function (opts) {
+      tip_template: function (opts) {
         var $blank, content, $wrapper;
 
         opts.tip_class = opts.tip_class || '';
 
         $blank = $(settings.template.tip).addClass(opts.tip_class);
-        content = $.trim($(opts.li).html()) +
+
+        content =
+          $.trim($(opts.li).html()) +
           methods.button_text(opts.button_text) +
           settings.template.link +
           methods.timer_instance(opts.index);
@@ -206,28 +214,30 @@
         return $blank[0];
       },
 
-      timer_instance : function (index) {
+      timer_instance: function (index) {
         var txt;
 
         if ((index === 0 && settings.startTimerOnClick && settings.timer > 0) || settings.timer === 0) {
           txt = '';
-        } else {
+        }
+        else {
           txt = methods.outerHTML($(settings.template.timer)[0]);
         }
         return txt;
       },
 
-      button_text : function (txt) {
+      button_text: function (txt) {
         if (settings.nextButton) {
           txt = $.trim(txt) || 'Next';
           txt = methods.outerHTML($(settings.template.button).append(txt)[0]);
-        } else {
+        }
+        else {
           txt = '';
         }
         return txt;
       },
 
-      create : function (opts) {
+      create: function (opts) {
         // backwards compatibility with data-text attribute
         var buttonText = opts.$li.attr('data-button') || opts.$li.attr('data-text'),
           tipClass = opts.$li.attr('class'),
@@ -241,7 +251,7 @@
         $(settings.tipContainer).append($tip_content);
       },
 
-      show : function (init) {
+      show: function (init) {
         var opts = {}, ii, opts_arr = [], opts_len = 0, p,
             $timer = null;
 
@@ -251,20 +261,21 @@
           // don't go to the next li if the tour was paused
           if (settings.paused) {
             settings.paused = false;
-          } else {
+          }
+          else {
             methods.set_li(init);
           }
 
           settings.attempts = 0;
 
           if (settings.$li.length && settings.$target.length > 0) {
-            if(init){ //run when we first start
-                settings.preRideCallback(settings.$li.index(), settings.$next_tip );
-                if(settings.modal){
-                    methods.show_modal();
-                }
+            if (init) { //run when we first start
+              settings.preRideCallback(settings.$li.index(), settings.$next_tip);
+              if (settings.modal) {
+                  methods.show_modal();
+              }
             }
-            settings.preStepCallback(settings.$li.index(), settings.$next_tip );
+            settings.preStepCallback(settings.$li.index(), settings.$next_tip);
 
             // parse options
             opts_arr = (settings.$li.data('options') || ':').split(';');
@@ -279,7 +290,7 @@
             settings.tipSettings = $.extend({}, settings, opts);
             settings.tipSettings.tipLocationPattern = settings.tipLocationPatterns[settings.tipSettings.tipLocation];
 
-            if(settings.modal && settings.expose){
+            if (settings.modal && settings.expose) {
               methods.expose();
             }
 
@@ -290,7 +301,8 @@
 
             if (methods.is_phone()) {
               methods.pos_phone(true);
-            } else {
+            }
+            else {
               methods.pos_default(true);
             }
 
@@ -307,14 +319,16 @@
                   width: $('.joyride-timer-indicator-wrap', settings.$next_tip).outerWidth()
                 }, settings.timer);
 
-              } else {
+              }
+              else {
 
                 settings.$next_tip.show();
 
               }
 
 
-            } else if (/fade/i.test(settings.tipAnimation)) {
+            }
+            else if (/fade/i.test(settings.tipAnimation)) {
 
               $timer.outerWidth(0);
 
@@ -327,7 +341,8 @@
                   width: $('.joyride-timer-indicator-wrap', settings.$next_tip).outerWidth()
                 }, settings.timer);
 
-              } else {
+              }
+              else {
 
                 settings.$next_tip.fadeIn(settings.tipAnimationFadeSpeed);
 
@@ -338,17 +353,20 @@
             // Focus next button for keyboard users.
             $('.joyride-next-tip', settings.$current_tip).focus();
             methods.tabbable(settings.$current_tip);
+          }
           // skip non-existent targets
-          } else if (settings.$li && settings.$target.length < 1) {
+          else if (settings.$li && settings.$target.length < 1) {
 
             methods.show();
 
-          } else {
+          }
+          else {
 
             methods.end();
 
           }
-        } else {
+        }
+        else {
 
           settings.paused = true;
 
@@ -357,7 +375,7 @@
       },
 
       // detect phones with media queries if supported.
-      is_phone : function () {
+      is_phone: function () {
         if (Modernizr) {
           return Modernizr.mq('only screen and (max-width: 767px)');
         }
@@ -365,31 +383,33 @@
         return (settings.$window.width() < 767) ? true : false;
       },
 
-      support_localstorage : function () {
+      support_localstorage: function () {
         if (Modernizr) {
           return Modernizr.localstorage;
-        } else {
+        }
+        else {
           return !!window.localStorage;
         }
       },
 
-      hide : function () {
-        if(settings.modal && settings.expose){
+      hide: function () {
+        if (settings.modal && settings.expose) {
           methods.un_expose();
         }
-        if(!settings.modal){
-        $('.joyride-modal-bg').hide();
+        if (!settings.modal) {
+          $('.joyride-modal-bg').hide();
         }
         settings.$current_tip.hide();
         settings.postStepCallback(settings.$li.index(), settings.$current_tip);
       },
 
-      set_li : function (init) {
+      set_li: function (init) {
         if (init) {
           settings.$li = settings.$tip_content.eq(settings.startOffset);
           methods.set_next_tip();
           settings.$current_tip = settings.$next_tip;
-        } else {
+        }
+        else {
           settings.$li = settings.$li.next();
           methods.set_next_tip();
         }
@@ -397,27 +417,32 @@
         methods.set_target();
       },
 
-      set_next_tip : function () {
+      set_next_tip: function () {
         settings.$next_tip = $('.joyride-tip-guide[data-index=' + settings.$li.index() + ']');
       },
 
-      set_target : function () {
-        var cl = settings.$li.attr('data-class'),
-            id = settings.$li.attr('data-id'),
-            $sel = function () {
-              if (id) {
-                return $(settings.document.getElementById(id));
-              } else if (cl) {
-                return $('.' + cl).filter(":visible").first();
-              } else {
-                return $('body');
-              }
-            };
+      set_target: function () {
+        var cl, id, $sel;
+
+        cl = settings.$li.attr('data-class');
+        id = settings.$li.attr('data-id');
+
+        $sel = function () {
+          if (id) {
+            return $(settings.document.getElementById(id));
+          }
+          else if (cl) {
+            return $('.' + cl).filter(":visible").first();
+          }
+          else {
+            return $('body');
+          }
+        };
 
         settings.$target = $sel();
       },
 
-      scroll_to : function () {
+      scroll_to: function () {
         var window_half, tipOffset;
 
         window_half = settings.$window.height() / 2;
@@ -428,7 +453,7 @@
         }, settings.scrollSpeed);
       },
 
-      paused : function () {
+      paused: function () {
         if (($.inArray((settings.$li.index() + 1), settings.pauseAfter) === -1)) {
           return true;
         }
@@ -436,9 +461,9 @@
         return false;
       },
 
-      destroy : function () {
-        if(!$.isEmptyObject(settings)){
-        settings.$document.off('.joyride');
+      destroy: function () {
+        if (!$.isEmptyObject(settings)) {
+          settings.$document.off('.joyride');
         }
 
         $(window).off('.joyride');
@@ -448,32 +473,31 @@
         settings = {};
       },
 
-      restart : function () {
-        if(!settings.autoStart)
-        {
+      restart: function () {
+        if (!settings.autoStart) {
           if (!settings.startTimerOnClick && settings.timer > 0) {
             methods.show('init');
             methods.startTimer();
-          } else {
+          }
+          else {
             methods.show('init');
           }
           settings.autoStart = true;
         }
-        else
-        {
-        methods.hide();
-        settings.$li = undefined;
-        methods.show('init');
+        else {
+          methods.hide();
+          settings.$li = undefined;
+          methods.show('init');
         }
       },
 
-      pos_default : function (init) {
-        var half_fold = Math.ceil(settings.$window.height() / 2),
+      pos_default: function (init) {
+        var half_fold    = Math.ceil(settings.$window.height() / 2),
             tip_position = settings.$next_tip.offset(),
-            $nub = $('.joyride-nub', settings.$next_tip),
-            nub_width = Math.ceil($nub.outerWidth() / 2),
-            nub_height = Math.ceil($nub.outerHeight() / 2),
-            toggle = init || false;
+            $nub         = $('.joyride-nub', settings.$next_tip),
+            nub_width    = Math.ceil($nub.outerWidth() / 2),
+            nub_height   = Math.ceil($nub.outerHeight() / 2),
+            toggle       = init || false;
 
         // tip must not be "display: none" to calculate position
         if (toggle) {
@@ -489,7 +513,8 @@
             if (methods.bottom()) {
               settings.$next_tip.css({
                 top: (settings.$target.offset().top + nub_height + settings.$target.outerHeight() + topAdjustment),
-                left: settings.$target.offset().left + leftAdjustment});
+                left: settings.$target.offset().left + leftAdjustment
+              });
 
               if (/right/i.test(settings.tipSettings.nubPosition)) {
                 settings.$next_tip.css('left', settings.$target.offset().left - settings.$next_tip.outerWidth() + settings.$target.outerWidth());
@@ -497,27 +522,33 @@
 
               methods.nub_position($nub, settings.tipSettings.nubPosition, 'top');
 
-            } else if (methods.top()) {
+            }
+            else if (methods.top()) {
 
               settings.$next_tip.css({
                 top: (settings.$target.offset().top - settings.$next_tip.outerHeight() - nub_height + topAdjustment),
-                left: settings.$target.offset().left + leftAdjustment});
+                left: settings.$target.offset().left + leftAdjustment
+              });
 
               methods.nub_position($nub, settings.tipSettings.nubPosition, 'bottom');
 
-            } else if (methods.right()) {
+            }
+            else if (methods.right()) {
 
               settings.$next_tip.css({
                 top: settings.$target.offset().top + topAdjustment,
-                left: (settings.$target.outerWidth() + settings.$target.offset().left + nub_width) + leftAdjustment});
+                left: (settings.$target.outerWidth() + settings.$target.offset().left + nub_width) + leftAdjustment
+              });
 
               methods.nub_position($nub, settings.tipSettings.nubPosition, 'left');
 
-            } else if (methods.left()) {
+            }
+            else if (methods.left()) {
 
               settings.$next_tip.css({
                 top: settings.$target.offset().top + topAdjustment,
-                left: (settings.$target.offset().left - settings.$next_tip.outerWidth() - nub_width) + leftAdjustment});
+                left: (settings.$target.offset().left - settings.$next_tip.outerWidth() - nub_width) + leftAdjustment
+              });
 
               methods.nub_position($nub, settings.tipSettings.nubPosition, 'right');
 
@@ -538,7 +569,8 @@
 
             }
 
-        } else if (settings.$li.length) {
+        }
+        else if (settings.$li.length) {
 
           methods.pos_modal($nub);
 
@@ -551,7 +583,7 @@
 
       },
 
-      pos_phone : function (init) {
+      pos_phone: function (init) {
         var tip_height = settings.$next_tip.outerHeight(),
             tip_offset = settings.$next_tip.offset(),
             target_height = settings.$target.outerHeight(),
@@ -576,14 +608,16 @@
               settings.$next_tip.offset({top: settings.$target.offset().top - tip_height - nub_height});
               $nub.addClass('bottom');
 
-          } else {
+          }
+          else {
 
             settings.$next_tip.offset({top: settings.$target.offset().top + target_height + nub_height});
             $nub.addClass('top');
 
           }
 
-        } else if (settings.$li.length) {
+        }
+        else if (settings.$li.length) {
 
           methods.pos_modal($nub);
 
@@ -595,7 +629,7 @@
         }
       },
 
-      pos_modal : function ($nub) {
+      pos_modal: function ($nub) {
         methods.center();
         $nub.hide();
 
@@ -603,33 +637,35 @@
 
       },
 
-      show_modal : function() {
+      show_modal: function () {
         if ($('.joyride-modal-bg').length < 1) {
-            $('body').append(settings.template.modal).show();
+          $('body').append(settings.template.modal).show();
         }
-
         if (/pop/i.test(settings.tipAnimation)) {
           $('.joyride-modal-bg').show();
-        } else {
+        }
+        else {
           $('.joyride-modal-bg').fadeIn(settings.tipAnimationFadeSpeed);
         }
       },
 
-      expose: function(){
+      expose: function () {
         var expose,
           exposeCover,
           el,
           origCSS,
           randId = 'expose-'+Math.floor(Math.random()*10000);
-        if (arguments.length>0 && arguments[0] instanceof $){
+        if (arguments.length>0 && arguments[0] instanceof $) {
           el = arguments[0];
-        } else if(settings.$target && !/body/i.test(settings.$target.selector)){
+        }
+        else if (settings.$target && !/body/i.test(settings.$target.selector)) {
           el = settings.$target;
-        }  else {
+        }
+        else {
           return false;
         }
-        if(el.length < 1){
-          if(window.console){
+        if (el.length < 1) {
+          if (window.console) {
             console.error('element not valid', el);
           }
           return false;
@@ -643,12 +679,14 @@
           height: el.outerHeight(true)
         });
         exposeCover = $(settings.template.exposeCover);
+
         origCSS = {
-                  zIndex: el.css('z-index'),
-                  position: el.css('position')
-                  };
+          zIndex: el.css('z-index'),
+          position: el.css('position')
+        };
+
         el.css('z-index',expose.css('z-index')*1+1);
-        if(origCSS.position == 'static'){
+        if (origCSS.position == 'static') {
           el.css('position','relative');
         }
         el.data('expose-css',origCSS);
@@ -661,7 +699,7 @@
         settings.$body.append(exposeCover);
         expose.addClass(randId);
         exposeCover.addClass(randId);
-        if(settings.tipSettings['exposeClass']){
+        if (settings.tipSettings['exposeClass']) {
           expose.addClass(settings.tipSettings['exposeClass']);
           exposeCover.addClass(settings.tipSettings['exposeClass']);
         }
@@ -670,45 +708,50 @@
         methods.add_exposed(el);
       },
 
-      un_expose: function(){
+      un_expose: function () {
         var exposeId,
           el,
           expose ,
           origCSS,
           clearAll = false;
-        if (arguments.length>0 && arguments[0] instanceof $){
+        if (arguments.length>0 && arguments[0] instanceof $) {
           el = arguments[0];
-        } else if(settings.$target && !/body/i.test(settings.$target.selector)){
+        }
+        else if (settings.$target && !/body/i.test(settings.$target.selector)) {
           el = settings.$target;
-        }  else {
+        }
+        else {
           return false;
         }
-        if(el.length < 1){
-          if(window.console){
+        if (el.length < 1) {
+          if (window.console) {
             console.error('element not valid', el);
           }
           return false;
         }
         exposeId = el.data('expose');
         expose = $('.'+exposeId);
-        if(arguments.length>1){
+        if (arguments.length>1) {
           clearAll = arguments[1];
         }
-        if(clearAll === true){
+        if (clearAll === true) {
           $('.joyride-expose-wrapper,.joyride-expose-cover').remove();
-        } else {
+        }
+        else {
           expose.remove();
         }
         origCSS = el.data('expose-css');
-        if(origCSS.zIndex == 'auto'){
+        if (origCSS.zIndex == 'auto') {
           el.css('z-index', '');
-        } else {
+        }
+        else {
           el.css('z-index',origCSS.zIndex);
         }
-        if(origCSS.position != el.css('position')){
-          if(origCSS.position == 'static'){// this is default, no need to set it.
+        if (origCSS.position != el.css('position')) {
+          if (origCSS.position == 'static') {// this is default, no need to set it.
             el.css('position', '');
-          } else {
+          }
+          else {
             el.css('position',origCSS.position);
           }
         }
@@ -717,32 +760,34 @@
         methods.remove_exposed(el);
       },
 
-      add_exposed: function(el){
+      add_exposed: function (el) {
         settings.exposed = settings.exposed || [];
-        if(el instanceof $){
+        if (el instanceof $) {
           settings.exposed.push(el[0]);
-        } else if(typeof el == 'string'){
+        }
+        else if (typeof el == 'string') {
           settings.exposed.push(el);
         }
       },
 
-      remove_exposed: function(el){
+      remove_exposed: function (el) {
         var search;
-        if(el instanceof $){
-          search = el[0]
-        } else if (typeof el == 'string'){
+        if (el instanceof $) {
+          search = el[0];
+        }
+        else if (typeof el == 'string') {
           search = el;
         }
         settings.exposed = settings.exposed || [];
-        for(var i=0; i<settings.exposed.length; i++){
-          if(settings.exposed[i] == search){
+        for (var i=0; i<settings.exposed.length; i++) {
+          if (settings.exposed[i] == search) {
             settings.exposed.splice(i,1);
             return;
           }
         }
       },
 
-      center : function () {
+      center: function () {
         var $w = settings.$window;
 
         var modalPosition = (settings.modalFixed) ? 'fixed' : 'absolute',
@@ -760,42 +805,45 @@
         return true;
       },
 
-      bottom : function () {
+      bottom: function () {
         return /bottom/i.test(settings.tipSettings.tipLocation);
       },
 
-      top : function () {
+      top: function () {
         return /top/i.test(settings.tipSettings.tipLocation);
       },
 
-      right : function () {
+      right: function () {
         return /right/i.test(settings.tipSettings.tipLocation);
       },
 
-      left : function () {
+      left: function () {
         return /left/i.test(settings.tipSettings.tipLocation);
       },
 
-      corners : function (el) {
-        var w = settings.$window,
-            window_half = w.height() / 2,
-            tipOffset = Math.ceil(settings.$target.offset().top - window_half + settings.$next_tip.outerHeight()),//using this to calculate since scroll may not have finished yet.
-            right = w.width() + w.scrollLeft(),
-            offsetBottom =  w.height() + tipOffset,
-            bottom = w.height() + w.scrollTop(),
-            top = w.scrollTop();
+      corners: function (el) {
+        var w = settings.$window;
 
-            if(tipOffset < top){
-              if (tipOffset <0 ){
-                top = 0;
-              } else {
-                top = tipOffset;
-              }
-            }
+        var window_half  = w.height() / 2,
+            // Using tipOffset to calculate since scrolling may not have finished yet.
+            tipOffset    = Math.ceil(settings.$target.offset().top - window_half + settings.$next_tip.outerHeight()),
+            right        = w.width() + w.scrollLeft(),
+            offsetBottom = w.height() + tipOffset,
+            bottom       = w.height() + w.scrollTop(),
+            top          = w.scrollTop();
 
-            if(offsetBottom > bottom){
-              bottom = offsetBottom;
-            }
+        if (tipOffset < top) {
+          if (tipOffset <0) {
+            top = 0;
+          }
+          else {
+            top = tipOffset;
+          }
+        }
+
+        if (offsetBottom > bottom) {
+          bottom = offsetBottom;
+        }
 
         return [
           el.offset().top < top,
@@ -805,7 +853,7 @@
         ];
       },
 
-      visible : function (hidden_corners) {
+      visible: function (hidden_corners) {
         var i = hidden_corners.length;
 
         while (i--) {
@@ -815,27 +863,29 @@
         return true;
       },
 
-      nub_position : function (nub, pos, def) {
+      nub_position: function (nub, pos, def) {
         if (pos === 'auto') {
           nub.addClass(def);
-        } else {
+        }
+        else {
           nub.addClass(pos);
         }
       },
 
-      startTimer : function () {
+      startTimer: function () {
         if (settings.$li.length) {
           settings.automate = setTimeout(function () {
             methods.hide();
             methods.show();
             methods.startTimer();
           }, settings.timer);
-        } else {
+        }
+        else {
           clearTimeout(settings.automate);
         }
       },
 
-      end : function (isAborted) {
+      end: function (isAborted) {
         isAborted = isAborted || false;
         if (settings.cookieMonster) {
           $.cookie(settings.cookieName, 'ridden', { expires: 365, domain: settings.cookieDomain, path: settings.cookiePath });
@@ -848,7 +898,7 @@
         if (settings.timer > 0) {
           clearTimeout(settings.automate);
         }
-        if(settings.modal && settings.expose){
+        if (settings.modal && settings.expose) {
           methods.un_expose();
         }
         if (settings.$current_tip) {
@@ -861,20 +911,16 @@
         $('.joyride-modal-bg').hide();
       },
 
-      jquery_check : function () {
+      jquery_check: function () {
         // define on() and off() for older jQuery
         if (!$.isFunction($.fn.on)) {
 
           $.fn.on = function (types, sel, fn) {
-
             return this.delegate(sel, types, fn);
-
           };
 
           $.fn.off = function (types, sel, fn) {
-
             return this.undelegate(sel, types, fn);
-
           };
 
           return false;
@@ -883,37 +929,38 @@
         return true;
       },
 
-      outerHTML : function (el) {
+      outerHTML: function (el) {
         // support FireFox < 11
         return el.outerHTML || new XMLSerializer().serializeToString(el);
       },
 
-      version : function () {
+      version: function () {
         return settings.version;
       },
 
-      tabbable : function (el) {
-        $(el).on('keydown', function( event ) {
-          if (!event.isDefaultPrevented() && event.keyCode &&
-              // Escape key.
-              event.keyCode === 27 ) {
+      tabbable: function (el) {
+        $(el).on('keydown', function (event) {
+          // Escape key.
+          if (!event.isDefaultPrevented() && event.keyCode && event.keyCode === 27) {
             event.preventDefault();
-            methods.end(true /* isAborted */);
+            // Abort.
+            methods.end(true);
             return;
           }
 
           // Prevent tabbing out of tour items.
-          if ( event.keyCode !== 9 ) {
+          if (event.keyCode !== 9) {
             return;
           }
           var tabbables = $(el).find(":tabbable"),
-            first = tabbables.filter(":first"),
-            last  = tabbables.filter(":last");
-          if ( event.target === last[0] && !event.shiftKey ) {
-            first.focus( 1 );
+              first     = tabbables.filter(":first"),
+              last      = tabbables.filter(":last");
+          if (event.target === last[0] && !event.shiftKey) {
+            first.focus(1);
             event.preventDefault();
-          } else if ( event.target === first[0] && event.shiftKey ) {
-            last.focus( 1 );
+          }
+          else if (event.target === first[0] && event.shiftKey) {
+            last.focus(1);
             event.preventDefault();
           }
         });
@@ -924,9 +971,11 @@
   $.fn.joyride = function (method) {
     if (methods[method]) {
       return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-    } else if (typeof method === 'object' || !method) {
+    }
+    else if (typeof method === 'object' || !method) {
       return methods.init.apply(this, arguments);
-    } else {
+    }
+    else {
       $.error('Method ' +  method + ' does not exist on jQuery.joyride');
     }
   };
