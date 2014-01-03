@@ -19,6 +19,7 @@
       'version'              : '2.1',
       'tipLocation'          : 'bottom',  // 'top' or 'bottom' in relation to parent
       'nubPosition'          : 'auto',    // override on a per tooltip bases
+      'pointNubToSource'     : false,     // Adjust the position of the tip so that the nub points to the centre of the element
       'scroll'               : true,      // whether to scroll to tips
       'scrollSpeed'          : 300,       // Page scrolling speed in milliseconds
       'timer'                : 0,         // 0 = no timer , all other numbers = timer in milliseconds
@@ -499,16 +500,19 @@
             nub_height   = Math.ceil($nub.outerHeight() / 2),
             toggle       = init || false;
 
-        // tip must not be "display: none" to calculate position
+        // Tip must not be "display: none" to calculate position.
         if (toggle) {
           settings.$next_tip.css('visibility', 'hidden');
           settings.$next_tip.show();
         }
 
         if (!/body/i.test(settings.$target.selector)) {
-            var
-              topAdjustment = settings.tipSettings.tipAdjustmentY ? parseInt(settings.tipSettings.tipAdjustmentY) : 0,
-              leftAdjustment = settings.tipSettings.tipAdjustmentX ? parseInt(settings.tipSettings.tipAdjustmentX) : 0;
+            var topAdjustment  = settings.tipSettings.tipAdjustmentY ? parseInt(settings.tipSettings.tipAdjustmentY) : 0,
+                leftAdjustment = settings.tipSettings.tipAdjustmentX ? parseInt(settings.tipSettings.tipAdjustmentX) : 0;
+
+            if (settings.pointNubToSource && methods.left() || methods.bottom()) {
+              topAdjustment = (settings.$target.height() / 2) - (parseFloat($nub.offset().top, 10) + ($nub.outerHeight() / 2));
+            }
 
             if (methods.bottom()) {
               settings.$next_tip.css({
