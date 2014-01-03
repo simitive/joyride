@@ -510,8 +510,11 @@
             var topAdjustment  = settings.tipSettings.tipAdjustmentY ? parseInt(settings.tipSettings.tipAdjustmentY) : 0,
                 leftAdjustment = settings.tipSettings.tipAdjustmentX ? parseInt(settings.tipSettings.tipAdjustmentX) : 0;
 
-            if (settings.pointNubToSource && methods.left() || methods.bottom()) {
-              topAdjustment = (settings.$target.height() / 2) - (parseFloat($nub.offset().top, 10) + ($nub.outerHeight() / 2));
+            if (settings.pointNubToSource && (methods.left() || methods.right())) {
+              topAdjustment += (settings.$target.height() / 2) - (parseFloat($nub.offset().top, 10) + ($nub.outerHeight() / 2));
+            }
+            if (settings.pointNubToSource && (methods.top() || methods.bottom())) {
+              leftAdjustment += (settings.$target.width() / 2) - (parseFloat($nub.offset().left, 10) + ($nub.outerWidth() / 2));
             }
 
             if (methods.bottom()) {
