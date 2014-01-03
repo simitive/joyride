@@ -4,6 +4,10 @@
  * Copyright 2013, ZURB
  * Free to use under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
+ *
+ * Forked from Github by @maffoobristol for @simitive, Bristol on 03/01/2014.
+ *
+ * All changes are public and remain under the above-stated MIT license.
 */
 
 /*jslint unparam: true, browser: true, indent: 2 */
@@ -33,6 +37,7 @@
       'localStorageKey'      : 'joyride', // Keyname in localstorage
       'tipContainer'         : 'body',    // Where will the tip be attached
       'modal'                : false,     // Whether to cover page with modal during the tour
+      'modalFixed'           : true,      // Whether to fix a modal tip to the page (requires modal:true)
       'expose'               : false,     // Whether to expose the elements at each step in the tour (requires modal:true)
       'postExposeCallback'   : $.noop,    // A method to call after an element has been exposed
       'preRideCallback'      : $.noop,    // A method to call before the tour starts (passed index, tip, and cloned exposed element)
@@ -740,10 +745,17 @@
       center : function () {
         var $w = settings.$window;
 
+        var modalPosition = (settings.modalFixed) ? 'fixed' : 'absolute',
+            _scrollTop    = (settings.modalFixed) ? 0 : $w.scrollTop(),
+            _scrollLeft   = (settings.modalFixed) ? 0 : $w.scrollLeft();
+
         settings.$next_tip.css({
-          top : ((($w.height() - settings.$next_tip.outerHeight()) / 2) + $w.scrollTop()),
-          left : ((($w.width() - settings.$next_tip.outerWidth()) / 2) + $w.scrollLeft())
+          top: ((($w.height() - settings.$next_tip.outerHeight()) / 2.5) + _scrollTop),
+          left: ((($w.width() - settings.$next_tip.outerWidth()) / 2) + _scrollLeft),
+          position: modalPosition
         });
+
+        settings.$next_tip.addClass('joyride-tip-guide-modal');
 
         return true;
       },
