@@ -894,6 +894,12 @@
 
       end: function (isAborted) {
         isAborted = isAborted || false;
+
+        // Unbind resize events.
+        if (isAborted) {
+          settings.$window.unbind('resize.joyride');
+        }
+
         if (settings.cookieMonster) {
           $.cookie(settings.cookieName, 'ridden', { expires: 365, domain: settings.cookieDomain, path: settings.cookiePath });
         }
